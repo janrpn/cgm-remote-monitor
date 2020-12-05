@@ -1,6 +1,8 @@
 'use strict';
 
 require('should');
+const fs = require('fs');
+
 
 describe('Uploader Battery', function ( ) {
   var data = {devicestatus: [{mills: Date.now(), uploader: {battery: 20}}]};
@@ -9,7 +11,7 @@ describe('Uploader Battery', function ( ) {
     var sandbox = require('../lib/sandbox')();
     var ctx = {
       settings: {}
-      , language: require('../lib/language')()
+      , language: require('../lib/language')(fs)
     };
     ctx.language.set('en');
     ctx.levels = require('../lib/levels');
@@ -42,7 +44,7 @@ describe('Uploader Battery', function ( ) {
           done();
         }
       }
-      , language: require('../lib/language')()
+      , language: require('../lib/language')(fs)
     };
     ctx.language.set('en');
 
@@ -63,7 +65,7 @@ describe('Uploader Battery', function ( ) {
           done();
         }
       }
-      , language: require('../lib/language')()
+      , language: require('../lib/language')(fs)
     };
     ctx.language.set('en');
 
@@ -82,7 +84,7 @@ describe('Uploader Battery', function ( ) {
           options.hide.should.equal(true);
           done();
         }
-      }, language: require('../lib/language')()
+      }, language: require('../lib/language')(fs)
     };
     ctx.language.set('en');
 
@@ -93,11 +95,11 @@ describe('Uploader Battery', function ( ) {
     upbat.updateVisualisation(sbx);
   });
 
-  it('should handle alexa requests', function (done) {
+  it('should handle virtAsst requests', function (done) {
 
     var ctx = {
       settings: {}
-      , language: require('../lib/language')()
+      , language: require('../lib/language')(fs)
     };
     ctx.language.set('en');
 
@@ -106,13 +108,19 @@ describe('Uploader Battery', function ( ) {
     var upbat = require('../lib/plugins/upbat')(ctx);
     upbat.setProperties(sbx);
 
-    upbat.alexa.intentHandlers.length.should.equal(1);
+    upbat.virtAsst.intentHandlers.length.should.equal(2);
 
-    upbat.alexa.intentHandlers[0].intentHandler(function next(title, response) {
-      title.should.equal('Uploader battery');
+    upbat.virtAsst.intentHandlers[0].intentHandler(function next(title, response) {
+      title.should.equal('Uploader Battery');
       response.should.equal('Your uploader battery is at 20%');
+      
+      upbat.virtAsst.intentHandlers[1].intentHandler(function next(title, response) {
+        title.should.equal('Uploader Battery');
+        response.should.equal('Your uploader battery is at 20%');
 
-      done();
+        done();
+      }, [], sbx);
+      
     }, [], sbx);
 
   });
